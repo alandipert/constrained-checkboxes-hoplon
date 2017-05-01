@@ -6,8 +6,7 @@
                   [org.clojure/clojurescript "1.9.293"]
                   [frankiesardo/linked       "1.2.9"]
                   [tailrecursion/boot-jetty  "0.1.3"]]
-  :source-paths #{"src"}
-  :asset-paths  #{"assets"})
+  :source-paths #{"src"})
 
 (require
   '[adzerk.boot-cljs         :refer [cljs]]
