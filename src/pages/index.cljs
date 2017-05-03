@@ -1,18 +1,24 @@
 (ns ^{:hoplon/page "index.html"} pages.index
   (:require [clojure.pprint :as pp]
-            [hoplon.core    :as h :refer [div html head title body h2 fieldset label input for-tpl]]
+            [hoplon.core    :as h :refer [a em div html head title body h2 fieldset label input pre for-tpl]]
             [hoplon.jquery]
             [javelin.core   :as j :refer [cell cell=]]
             [linked.core    :as linked]))
 
-(defn choose
-  "Adds x to the linked set ls, ensuring that ls only retains the latest n
-  elements chosen so far."
-  [ls n x]
-  (loop [ls' (conj ls x)]
-    (if (> (count ls') n)
-      (recur (disj ls' (first ls')))
-      ls')))
+(defn compact
+  "Removes elements from the front of linked set s until n or fewer remain."
+  [n s]
+  (if (> (count s) n)
+    (recur n (disj s (first s)))
+    s))
+
+(defmethod h/on! :check
+  [elem _ callback]
+  (elem :change #(if (.. % -target -checked) (callback %))))
+
+(defmethod h/on! :uncheck
+  [elem _ callback]
+  (elem :change #(if-not (.. % -target -checked) (callback %))))
 
 (html
   (head
@@ -20,16 +26,19 @@
   (body
     (let [choices     ["Apple" "Apricot" "Banana" "Mango" "Orange" "Plum"]
           max-choices 2
+          limit       (partial compact max-choices)
           chosen      (cell (linked/set))]
-      (cell= (println chosen))
       (div
         (h2 (pp/cl-format nil "Which fruits do you want? Pick ~R or fewer." max-choices))
         (fieldset {:css {:border "none"}}
           (for [choice choices]
             (label :css {:display "block"}
               (input {:type    "checkbox"
-                      :checked (cell= (contains? chosen choice))
-                      :change  #(if (.. % -target -checked)
-                                  (swap! chosen choose max-choices choice)
-                                  (swap! chosen disj choice))})
-              choice)))))))
+                      :check   #(swap! chosen (comp limit conj) choice)
+                      :uncheck #(swap! chosen (comp limit disj) choice)
+                      :checked (cell= (contains? chosen choice))})
+              choice)))
+        (h2 "Chosen")
+        (pre (cell= (pp/write chosen :stream nil :pretty true)))
+        (a :href "https://github.com/alandipert/constrained-checkboxes-hoplon/"
+          (em "Source code"))))))
