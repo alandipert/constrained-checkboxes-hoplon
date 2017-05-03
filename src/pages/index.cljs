@@ -9,9 +9,10 @@
   "Adds x to the linked set ls, ensuring that ls only retains the latest n
   elements chosen so far."
   [ls n x]
-  (if (> (count ls) (dec n))
-    (recur (disj ls (first ls)) n x)
-    (conj ls x)))
+  (loop [ls' (conj ls x)]
+    (if (> (count ls') n)
+      (recur (disj ls' (first ls')))
+      ls')))
 
 (html
   (head
