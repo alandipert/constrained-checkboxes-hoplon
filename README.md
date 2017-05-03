@@ -1,6 +1,32 @@
 # constrained-checkboxes-hoplon
 
-A [Hoplon][3] project designed to...well, that part is up to you.
+This is a little [Hoplon][3] demo to demonstrate how one might implement
+"constrained checkboxes". These are a group of checkboxes, only some of which
+may be selected by the user at one time. The best way to understand it is
+to [look at it.](https://tailrecursion.com/~alan/constrained-checkboxes-hoplon/)
+
+This project was inspired by this
+[tweet by Evan Czaplicki](https://twitter.com/czaplic/status/859065124006445056)
+that shows how to solve the problem in [Elm](http://elm-lang.org/).
+
+## Implementation notes
+
+The heart of the implementation is
+the [linked set](https://github.com/frankiesardo/linked) data structure by
+Frankie Sardo. This is a set that maintains elements in insertion order.
+
+Retaining the n-most-recently-added elements in one of these linked sets is
+really easy. You just calculate how much smaller the set should be, take that
+many elements from the seq view of the set, and `disj` them. The `retain`
+function in the code implements this.
+
+The other kind of tricky part is handling user input nicely. There aren't native
+"check" and "uncheck" events on `input` elements of type `"checkbox"`. Even
+jQuery doesn't provide them.
+
+Fortunately, in Hoplon, one can easily implement new kinds of event handlers by
+extending the `hoplon.core/on!` multimethod. In the example, I create
+implementations for `:check` and `:uncheck` events.
 
 ## Dependencies
 
@@ -35,7 +61,7 @@ A [Hoplon][3] project designed to...well, that part is up to you.
 
 ## License
 
-Copyright © 2017, **Your Name Goes Here**
+Copyright © 2017, Alan Dipert
 
 [1]: http://boot-clj.com
 [2]: http://localhost:8000
