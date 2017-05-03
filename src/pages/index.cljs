@@ -5,7 +5,7 @@
             [javelin.core   :as j :refer [cell cell=]]
             [linked.core    :as linked]))
 
-(defn compact
+(defn retain
   "Removes elements from the front of linked set s until n or fewer remain."
   [n s]
   (if (> (count s) n)
@@ -26,7 +26,7 @@
   (body
     (let [choices     ["Apple" "Apricot" "Banana" "Mango" "Orange" "Plum"]
           max-choices 2
-          limit       (partial compact max-choices)
+          limit       (partial retain max-choices)
           chosen      (cell (linked/set))]
       (div
         (h2 (pp/cl-format nil "Which fruits do you want? Pick ~R or fewer." max-choices))
