@@ -20,6 +20,7 @@
     (let [choices     ["Apple" "Apricot" "Banana" "Mango" "Orange" "Plum"]
           max-choices 2
           chosen      (cell (linked/set))]
+      (cell= (println chosen))
       (div
         (h2 (pp/cl-format nil "Which fruits do you want? Pick ~R or fewer." max-choices))
         (fieldset {:css {:border "none"}}
@@ -27,5 +28,7 @@
             (label :css {:display "block"}
               (input {:type    "checkbox"
                       :checked (cell= (contains? chosen choice))
-                      :change  #(swap! chosen choose max-choices choice)})
+                      :change  #(if (.. % -target -checked)
+                                  (swap! chosen choose max-choices choice)
+                                  (swap! chosen disj choice))})
               choice)))))))
